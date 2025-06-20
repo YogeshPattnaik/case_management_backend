@@ -9,6 +9,8 @@ router.use('/api/v1/masters/postoffices', require('./masters/postOffice.routes')
 router.use('/api/v1/masters/pincode', require('./masters/pincode.routes'));
 router.use('/api/v1/masters/roles', require('./masters/role.routes'));
 router.use('/api/v1/masters/identification-types', require('./masters/identificationType.route'));
+router.use('/api/v1/masters/sidebar', require('./masters/sidebarMenu.route'));
+router.use('/api/v1/masters/permissions', require('./masters/permission.routes'));
 
 // user API
 router.use('/api/v1/users', require('./user/user.routes'));
