@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
-const sidebarController = require('../../controllers/masters/sidebar.controller');
+const sidebarController = require('../../controllers/masters/sidebarMenu.controller');
 const validate = require('../../middlewares/validate');
 const authenticate = require('../../middlewares/auth/authenticate');
-const sidebarValidation = require('../../validations/masters/sidebar.validation');
+const sidebarValidation = require('../../validations/masters/sidebarMenu.validation');
 
 /**
  * All routes below require authentication

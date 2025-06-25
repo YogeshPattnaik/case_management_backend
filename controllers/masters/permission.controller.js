@@ -1,6 +1,6 @@
-const Permission = require('../../models/master/permission.model');
+const Permission = require('../../models/masters/permission.model');
 const ApiError = require('../../utils/ApiError');
-const logger = require('../../config/logger');
+const logger = require('../../utils/logger');
 
 exports.getAllPermissions = async (req, res, next) => {
   try {

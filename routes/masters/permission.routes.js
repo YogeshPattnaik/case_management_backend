@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const validate = require('../../middlewares/validate');
 const authenticate = require('../../middlewares/auth/authenticate');
-const controller = require('../../controllers/master/permission.controller');
+const controller = require('../../controllers/masters/permission.controller');
 const permissionValidation = require('../../validations/masters/permission.validation');
 
 router.use(authenticate)

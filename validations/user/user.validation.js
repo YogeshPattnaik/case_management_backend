@@ -39,6 +39,11 @@ const loginSchema = Joi.object({
   password: Joi.string().required(),
 });
 
+const assignRoleToUserSchema = Joi.object({
+  roleId: Joi.string().required(),
+  userId: Joi.string().required()
+});
+
 module.exports = {
   registerSchema: Joi.object({
     body: registerSchema,
@@ -49,9 +54,13 @@ module.exports = {
   completeProfileSchema: Joi.object({
     body: completeProfileSchema,
   }),
+  assignRoleToUserSchema: Joi.object({
+    body: assignRoleToUserSchema,
+  }),
   swaggerUserSchemas: {
     Register: j2s(registerSchema).swagger,
     Login: j2s(loginSchema).swagger,
-    CompleteProfile: j2s(completeProfileSchema).swagger
+    CompleteProfile: j2s(completeProfileSchema).swagger,
+    assignRoleToUser: j2s(assignRoleToUserSchema).swagger
   }
 };

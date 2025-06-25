@@ -10,6 +10,7 @@ const swaggerSpec = {
   },
   servers: [{ url: `http://localhost:${process.env.PORT || 5000}/api/v1` }],
   paths: {
+    // users API List
     '/users/login': {
       post: {
         tags: ['User'],
@@ -79,6 +80,47 @@ const swaggerSpec = {
         security: [{ bearerAuth: [] }]
       }
     },
+    '/users/sidebar': {
+      get: {
+        tags: ['User'],
+        summary: 'get sidebar according to user and roleId',
+        responses: {
+          200: { description: 'User data' }
+        },
+        security: [{ bearerAuth: [] }]
+      }
+    },
+    '/users/listUsers': {
+      get: {
+        tags: ['User'],
+        summary: 'get List of users with pagination',
+        responses: {
+          200: { description: 'User data' }
+        },
+        security: [{ bearerAuth: [] }]
+      }
+    },
+    '/users/assign-role-to-User': {
+      put: {
+        tags: ['User'],
+        summary: 'Assign role to the user',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/assignRoleToUser'
+              }
+            }
+          }
+        },
+        responses: {
+          200: { description: 'Role Assigned to the User' }
+        }
+      }
+    },
+  
+    // masters API list
     '/masters/countries': {
       get: {
         tags: ['Master'],
@@ -133,19 +175,44 @@ const swaggerSpec = {
         }],
         responses: { 200: { description: 'Location data' } }
       }
-    }
+    },
+    '/masters/permissions': {
+      get: {
+        tags: ['Master'],
+        summary: 'Get permission list',
+        responses: { 200: { description: 'Permission list' } }
+      }
+    },
+    '/masters/sidebar': {
+      get: {
+        tags: ['Master'],
+        summary: 'Get identification types',
+        responses: { 200: { description: 'ID types list' } },
+        security: [{ bearerAuth: [] }]
+      }
+    },
+    '/masters/sidebar/flat': {
+      get: {
+        tags: ['Master'],
+        summary: 'Get identification types',
+        responses: { 200: { description: 'ID types list' } },
+        security: [{ bearerAuth: [] }]
+      }
+    },
   },
   components: {
     securitySchemes: {
       bearerAuth: {
         type: 'http',
-        scheme: 'bearer'
+        scheme: 'bearer',
+        bearerFormat: 'JWT'
       }
     },
     schemas: {
         Login: swaggerUserSchemas.Login,
         Register: swaggerUserSchemas.Register,
-        CompleteProfile: swaggerUserSchemas.CompleteProfile
+        CompleteProfile: swaggerUserSchemas.CompleteProfile,
+        assignRoleToUser: swaggerUserSchemas.assignRoleToUser,
     }
   }
 };

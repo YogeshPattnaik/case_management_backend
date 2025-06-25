@@ -26,7 +26,7 @@ router.put(
 );
 router.post('/login', validate(userValidation.loginSchema), userController.login);
 router.get('/sidebar', authenticate, userController.getSidebar);
-router.get('/users', authenticate, userController.getPaginatedUsers);
-router.put('/users/:userId/role', userController.assignRoleToUser);
+router.get('/listUsers', authenticate, userController.getPaginatedUsers);
+router.put('/assign-role-to-User', authenticate, validate(userValidation.assignRoleToUserSchema), userController.assignRoleToUser);
 
 module.exports = router;

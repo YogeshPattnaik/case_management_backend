@@ -1,6 +1,7 @@
 const User = require('../../models/user/user.model');
 const RolePermission = require('../../models/masters/rolePermission.model');
 const Role = require('../../models/masters/role.model');
+const SidebarMenu = require('../../models/masters/sidebarMenu.model');
 const Permission = require('../../models/masters/permission.model');
 const jwt = require('jsonwebtoken');
 const ApiError = require('../../utils/ApiError');
@@ -108,22 +109,54 @@ exports.getSidebar = async (req, res, next) => {
   try {
     const roleId = req.user.role.id;
 
-    const rolePermission = await RolePermission.findOne({ roleId }).populate('permissions.permissionId');
-    if (!rolePermission) return res.status(200).json({ success: true, menu: [] });
+    const rolePermission = await RolePermission.findOne({ roleId });
 
-    const menu = rolePermission.permissions
-      .filter(p => p.actions.includes('read'))
-      .map(p => ({
-        label: p.permissionId.name,
-        route: p.permissionId.route,
-        icon: p.permissionId.icon
-      }));
+    if (!rolePermission || !rolePermission.permissions?.length) {
+      return res.status(200).json({ success: true, menu: [] });
+    }
 
-    res.status(200).json({ success: true, menu });
+    const readablePermissionIds = rolePermission.permissions
+      .filter(rp => rp.actions.includes('read'))
+      .map(rp => rp.permissionId.toString());
+
+    const allMenus = await SidebarMenu.find({ activeStatus: true }).lean();
+
+    const allowedMenus = allMenus.filter(menu =>
+      menu.permissionId ? readablePermissionIds.includes(menu.permissionId.toString()) : true
+    );
+
+    const menuMap = {};
+    allowedMenus.forEach(menu => {
+      menu.children = [];
+      menuMap[menu._id] = menu;
+    });
+
+    const finalMenu = [];
+    allowedMenus.forEach(menu => {
+      if (menu.parentId && menuMap[menu.parentId]) {
+        menuMap[menu.parentId].children.push(menu);
+      } else {
+        finalMenu.push(menu);
+      }
+    });
+
+    const formatted = finalMenu.map(formatSidebarItem);
+
+    res.status(200).json({ success: true, menu: formatted });
   } catch (err) {
-    next(err);
+    logger.error(`Get Sidebar Menu Error → ${err.message}`);
+    next(new ApiError(500, 'Failed to load sidebar menu'));
   }
 };
+
+function formatSidebarItem(item) {
+  return {
+    label: item.name || item.title,
+    path: item.route || item.path || '',
+    icon: item.icon || '',
+    children: item.children?.map(formatSidebarItem) || []
+  };
+}
 
 // get User list with pagination
 exports.getPaginatedUsers = async (req, res, next) => {
@@ -156,8 +189,7 @@ exports.getPaginatedUsers = async (req, res, next) => {
 // assign role to a user
 exports.assignRoleToUser = async (req, res, next) => {
   try {
-    const { userId } = req.params;
-    const { roleId } = req.body;
+    const { roleId, userId } = req.body;
 
     const role = await Role.findById(roleId);
     if (!role) return res.status(404).json({ success: false, message: 'Role not found' });

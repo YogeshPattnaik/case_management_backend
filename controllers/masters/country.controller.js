@@ -16,7 +16,7 @@ exports.createCountry = async (req, res, next) => {
       throw new ApiError(409, 'Country already exists');
     }
 
-    const country = await Country.create({ name, isoCode });
+    const country = await Country.create({ name, isoCode, activeStatus: true });
     logger.info(`Country created: ${name}`);
 
     res.status(201).json({ success: true, data: country });
@@ -28,8 +28,11 @@ exports.createCountry = async (req, res, next) => {
 // Get all countries
 exports.getAllCountries = async (req, res, next) => {
   try {
-    const countries = await Country.find().sort({ name: 1 });
-    res.status(200).json({ success: true, data: countries });
+    const countries = await Country.find().sort({ name: 1 }).where({ activeStatus: true});
+    res.status(200).json({ success: true, data: countries.map((item) => ({
+      id: item.id,
+      name: item.name,
+    })) });
   } catch (err) {
     next(err);
   }
