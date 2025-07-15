@@ -25,6 +25,8 @@ router.put(
   userController.completeProfile
 );
 router.post('/login', validate(userValidation.loginSchema), userController.login);
+router.post('/refresh-token', userController.refreshToken);
+router.post('/logout', authenticate, userController.logout);
 router.get('/sidebar', authenticate, userController.getSidebar);
 router.get('/listUsers', authenticate, userController.getPaginatedUsers);
 router.put('/assign-role-to-User', authenticate, validate(userValidation.assignRoleToUserSchema), userController.assignRoleToUser);

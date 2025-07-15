@@ -6,6 +6,6 @@ const stateController = require('../../controllers/masters/state.controller');
 router.post('/', stateController.createState);
 
 // Get all states for a country
-router.get('/:countryId', stateController.getStatesByCountry);
+router.get('', stateController.getStatesByCountry);
 
 module.exports = router;

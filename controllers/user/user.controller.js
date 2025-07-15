@@ -104,6 +104,67 @@ exports.login = async (req, res, next) => {
   }
 };
 
+// from refressh token get new access token
+exports.refreshToken = async (req, res, next) => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) {
+      throw new ApiError(401, 'Refresh token missing');
+    }
+
+    // Verify token
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    const user = await User.findById(decoded._id);
+
+    if (!user) {
+      throw new ApiError(401, 'Invalid refresh token');
+    }
+
+    const newAccessToken = user.generateAccessToken();
+    const newRefreshToken = user.generateRefreshToken();
+
+    res
+      .cookie('refreshToken', newRefreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      })
+      .json({
+        success: true,
+        accessToken: newAccessToken,
+        user: {
+          id: user._id,
+          fullName: user.fullName,
+          email: user.email,
+          mobile: user.mobile,
+          role: user.role,
+        },
+      });
+  } catch (err) {
+    logger.error(`Refresh Token Error → ${err.message}`);
+    next(new ApiError(401, 'Token expired or invalid'));
+  }
+};
+
+// User logout
+exports.logout = async (req, res, next) => {
+  try {
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict'
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'User logged out successfully'
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 // get sidebar menu according to role id
 exports.getSidebar = async (req, res, next) => {
   try {

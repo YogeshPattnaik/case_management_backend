@@ -1,9 +1,14 @@
 const Joi = require('joi');
 
-const createCountry = Joi.object({
-  body: Joi.object({
-    name: Joi.string().required(),
-  }),
+const countrySchema = Joi.object({
+  isoCode: Joi.string().required(),
+  name: Joi.string().required(),
+  activeStatus: Joi.boolean().optional()
 });
 
-module.exports = { createCountry };
+module.exports = {
+  countrySchema,
+  CountryValidationSchema: Joi.object({
+    body: countrySchema,
+  }),
+};

@@ -18,7 +18,10 @@ const ApiError = require('./utils/ApiError');
 const app = express();
 
 // Enable CORS
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true,
+}));
 
 // Body parsers MUST come before validator
 app.use(express.json());

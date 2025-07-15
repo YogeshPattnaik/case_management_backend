@@ -1,10 +1,14 @@
 const Joi = require('joi');
 
-const createState = Joi.object({
-  body: Joi.object({
-    name: Joi.string().required(),
-    countryId: Joi.string().hex().length(24).required(),
-  }),
+const stateSchema = Joi.object({
+  name: Joi.string().required(),
+  countryId: Joi.string().hex().length(24).required(),
+  activeStatus: Joi.boolean().optional(),
 });
 
-module.exports = { createState };
+module.exports = {
+  stateSchema,
+  stateValidationSchema: Joi.object({
+    body: stateSchema,
+  }),
+};
